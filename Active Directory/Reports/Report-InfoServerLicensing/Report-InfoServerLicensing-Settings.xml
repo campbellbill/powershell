@@ -1,0 +1,1251 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<ScriptConfig>
+  <FileInfo>
+    <Author>Bill Campbell</Author>
+    <Copyright>© 2014-2018 Bill Campbell. All rights reserved.</Copyright>
+    <CreatedOn>Jun 15, 2015</CreatedOn>
+    <LastModified>2018.Sept.21</LastModified>
+    <Version>2018.09.21.02</Version>
+  </FileInfo>
+  <!--
+  Notes: 
+    DO NOT remove any settings from a section! It will cause the script to throw an error.
+    This config file is setup for ONE Data Center City. Use a seperate config file for each Data Center City you need to setup.
+
+    Anything contained in Square Brackets '[]' will be replaced with the correct values as needed upon script execution.
+    Currently configured in the script are the following for replacment:
+        Bracketed text                 : Script Variable name
+    ___________________________________:__________________________
+     1. [ScriptDirectory]              : $ScriptDirectory
+     2. [ScriptNameNoExt]              : $ScriptNameNoExt
+     3. [DataCenterCity]               : $DataCenterCity
+     4. [PartialReportAndLogName]      : $PartialReportAndLogName
+     5. [LogFileDateFormat]            : $LogFileDate
+     6. [ReportFileDateFormat]         : $RptFileDate
+  -->
+
+  <!-- ALL ENTRIES IN THE 'DefaultSettings' SECTION ARE REQUIRED!! -->
+  <DefaultSettings>
+    <!-- Current Valid options for "DataCenterCity" are "Boston", "Denver", "Iowa City", "New Jersey" and "All". This will change as the script is adapted for other data centers. -->
+    <DataCenterCity>Denver</DataCenterCity>
+
+    <!-- The Full path and file name of the MultiThread script. Critical if the script is not in the same directory as the main script. -->
+    <MultiThreadScript>[ScriptDirectory]\[ScriptNameNoExt]-MultiThread.ps1</MultiThreadScript>
+
+    <Key>211,209,124,250,220,103,226,241,248,133,153,152,129,183,215,121,147,238,253,125,236,154,144,165,190,146,228,227,170,191,218,163</Key>
+
+    <!-- Disables the AD Computer object in Active Directory. The account running the script MUST have the appropriate permissions in Active Directory if setting this to TRUE. Valid values are "TRUE" or "FALSE". If unsure, leave it set at FALSE. -->
+    <DisableOldADServerObjects>FALSE</DisableOldADServerObjects>
+    <!-- Disables the AD Computer object if it has not updated its machine password for the number of days entered here. This is also used for other minor things in the script, so DON'T leave it blank! If unsure, leave it set at 45. -->
+    <DisableServersOlderThan>45</DisableServersOlderThan>
+
+    <!-- The following only have possible values of "TRUE" or "FALSE" -->
+    <!-- The CreateCsv variable controls the creation of the CSV report file. -->
+    <CreateCsv>TRUE</CreateCsv>
+    <!-- The CreateXlsx variable controls the creation of the XLSX report file. -->
+    <CreateXlsx>TRUE</CreateXlsx>
+    <IncludeMSSQL>TRUE</IncludeMSSQL>
+    <IncludeExcessiveUpTime>FALSE</IncludeExcessiveUpTime>
+    <IncludeHotFixDetails>FALSE</IncludeHotFixDetails>
+    <IncludeCustomAppInfo>FALSE</IncludeCustomAppInfo>
+    <IncludeInfraDetails>FALSE</IncludeInfraDetails>
+    <!-- The ExportCsvForBMC variable controls the creation of a CSV file that can be used to Import into BMC-BladeLogic. -->
+    <ExportCsvForBMC>FALSE</ExportCsvForBMC>
+    <ScrDebug>FALSE</ScrDebug>
+  </DefaultSettings>
+
+  <EmailSettings>
+    <!-- Possible values of "TRUE" or "FALSE" -->
+    <SendMail>TRUE</SendMail>
+
+    <!-- Email Address that the email will be sent from (Originator). Passed to Send-MailMessage as '-From'. -->
+    <FromAddr>[DataCenterCity].InfoServerLicensing@company.com</FromAddr>
+
+    <!-- Used to create a comma separated list of email addresses the email will be sent to (Recipients). Passed to Send-MailMessage as '-To'. You may have more than one ToAddr entry.-->
+    <Recipients>
+      <ToAddr>campbell.bill@outlook.com</ToAddr>
+      <ToAddr>first.last@example.com</ToAddr>
+
+      <!--
+      <ToAddr>first.last@company.com</ToAddr>
+      -->
+    </Recipients>
+
+    <!-- Outbound SMTP server address. Passed to Send-MailMessage as '-SmtpServer'. Add an entry for each SMTP server you wish to use. -->
+    <SmtpServers>
+      <SmtpSvr>
+        <DataCenterCity>Denver</DataCenterCity>
+        <SmtpSvrName>mail.company.com</SmtpSvrName>
+      </SmtpSvr>
+      <SmtpSvr>
+        <DataCenterCity>Boston</DataCenterCity>
+        <SmtpSvrName>mailhost.example.com</SmtpSvrName>
+      </SmtpSvr>
+      <SmtpSvr>
+        <DataCenterCity>Iowa City</DataCenterCity>
+        <SmtpSvrName>10.1.2.25</SmtpSvrName>
+      </SmtpSvr>
+    </SmtpServers>
+  </EmailSettings>
+
+  <!--
+    ALL ENTRIES IN THE 'ReportAndLogSettings' SECTION ARE REQUIRED!!
+    It is recommended that you do not change any values in the 'ReportAndLogSettings' section unless you know how the script works and uses them, AND what you are doing.
+    Changing them without knowing what you are doing will affect the log file itself and/or what is logged.
+  -->
+  <ReportAndLogSettings>
+    <!-- The following only has two possible values at this time. "MSExcel" and "OpenXML". Currently defaults to "MSExcel". To run in a headless mode, choose "OpenXML" as "MSExcel" can not be run unless the user executing it is logged in at the time the script is run. -->
+    <XlsxCreationEngine>MSExcel</XlsxCreationEngine>
+    <!-- Partial file name used to create the full report(s) and log filenames. Defaults to the script name without its file extension. -->
+    <PartialReportAndLogName>[ScriptNameNoExt]</PartialReportAndLogName>
+    <LogDirPath>[ScriptDirectory]\Logs</LogDirPath>
+    <LogFileDateFormat>yyyy.MM.dd.ddd</LogFileDateFormat>
+    <LogEntryDateFormat>[yyyy-MMM-dd HH:mm:ss]</LogEntryDateFormat>
+    <BaseLogNameFormat>[LogFileDateFormat]_[PartialReportAndLogName]_[DataCenterCity].log</BaseLogNameFormat>
+    <ReportDirPath>[ScriptDirectory]\Reports</ReportDirPath>
+    <ReportFileDateFormat>yyyy.MM.dd.ddd-HHmm</ReportFileDateFormat>
+    <!-- The extension here MUST be .html as the report looks for it when generating the other report file names. -->
+    <BaseReportNameFormat>[PartialReportAndLogName]_[DataCenterCity]_[ReportFileDateFormat].html</BaseReportNameFormat>
+  </ReportAndLogSettings>
+
+  <InScopeDNSDomains>
+    <!-- DataCenterCity is 'Denver' -->
+    <ActiveDirectoryDomain>
+      <DNSName>example.com</DNSName>
+      <NetBiosName>EXAMPLE</NetBiosName>
+      <Environment>Corp</Environment>
+      <DataCenterCity>Denver</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>ecollege.net</DNSName>
+      <NetBiosName>ATHENS</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>Denver</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>eclgsecure.net</DNSName>
+      <NetBiosName>CAIRO</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>Denver</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>ecollegeqa.net</DNSName>
+      <NetBiosName>ATHENSQA</NetBiosName>
+      <Environment>Staging</Environment>
+      <DataCenterCity>Denver</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>eclgsecuresc.net</DNSName>
+      <NetBiosName>CAIROSC</NetBiosName>
+      <Environment>Staging</Environment>
+      <DataCenterCity>Denver</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <!-- DataCenterCity is 'Boston' -->
+    <ActiveDirectoryDomain>
+      <DNSName>pad.examplecmg.com</DNSName>
+      <NetBiosName>PAD</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>Boston</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>wrk.pad.examplecmg.com</DNSName>
+      <NetBiosName>WRK</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>Boston</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <!-- DataCenterCity is 'Iowa City' -->
+    <ActiveDirectoryDomain>
+      <DNSName>schoolnet.prd</DNSName>
+      <NetBiosName>SCHOOLNET</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>Iowa City</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>schoolnet.dct</DNSName>
+      <NetBiosName>SCHOOLNET</NetBiosName>
+      <Environment>Staging</Environment>
+      <DataCenterCity>Iowa City</DataCenterCity>
+      <IsCentrallyManaged>FALSE</IsCentrallyManaged>
+      <!--<IsCentrallyManaged>TRUE</IsCentrallyManaged>-->
+    </ActiveDirectoryDomain>
+
+    <!-- DataCenterCity is 'New Jersey' -->
+    <ActiveDirectoryDomain>
+      <DNSName>aidmz.dcsdmz.local</DNSName>
+      <NetBiosName>AIDMZ</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>airoot.dcsroot.local</DNSName>
+      <NetBiosName>AIROOT</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>dcsdmz.local</DNSName>
+      <NetBiosName>DCSDMZ</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>dcsprod.dcsroot.local</DNSName>
+      <NetBiosName>DCSPROD</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>dcsutil.dcsroot.local</DNSName>
+      <NetBiosName>DCSUTIL</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>curroot.dcsroot.local</DNSName>
+      <NetBiosName>CURROOT</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>pbzroot.dcsroot.local</DNSName>
+      <NetBiosName>PBZROOT</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>pvue.dcsroot.local</DNSName>
+      <NetBiosName>PVUE</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>wsecn.dcsroot.local</DNSName>
+      <NetBiosName>WSECN</NetBiosName>
+      <Environment>Production</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+
+    <ActiveDirectoryDomain>
+      <DNSName>peroot.com</DNSName>
+      <NetBiosName>PEROOT</NetBiosName>
+      <Environment>All</Environment>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <IsCentrallyManaged>TRUE</IsCentrallyManaged>
+    </ActiveDirectoryDomain>
+  </InScopeDNSDomains>
+
+  <!--
+    Sample Encrypted Password:
+    <EncPassword>76492d1116743f0423413b16050a5345MgB8AEcAeABRAHQAWgBXAHkAdQByAFgAcwA4AFMAMwAzAG0AdwBpAGEAUgBJAGcAPQA9AHwANQBmAGMAYgA2ADYANwA1AGQANgAwADAAZQA5AGUAYQAyAGYAMgAzADkAMwA4ADQAYwBmADQAOQA4AGUAZgAyADQANABiADEAOAA0AGEAMABiADEAOAA1AGQANABlADYANQAzAGQAZgAyAGMANgAzADcAMwA5ADcAZQAwADYANAA=</EncPassword>
+  -->
+
+  <DomainUserInfo>
+    <DomainUser>
+      <DnsDomain>ecollege.net</DnsDomain>
+      <NbDomain>ATHENS</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AGoANABFAE4AMgByAFYAUQBDADcATwBtADkAbwBpADYAVgA4AGoAMgBhAEEAPQA9AHwANwA4AGQAMQAwADkAZQAyADQANQBjADkAMABkAGYANwA3ADcANQBmAGMAZAA3AGMAMgAwADIANQA0AGMANwA2ADcAOQBmAGMANgAyADEANAA5ADkAMwAxADIANQBkAGQANAAzADIAMwA1ADcAOQA2ADMAZgBjAGEAMgA2AGEAZQA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>ecollegeqa.net</DnsDomain>
+      <NbDomain>ATHENSQA</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8ADYAbgB4AG8AVwBsAHkAeQBRAEMAVQBiAGUAdABOAGoAMwB1AHkAdgBjAFEAPQA9AHwANgA1ADkAZQBkAGMAZgBjADEANwA1ADEANgBhADMAMQAyADEAOAA2ADQAZQBmADYANwA2ADQAYgAyADMAYgBhADYAOAA4AGYAZABkADgAZQAxADIANABhADgAOAA3ADQAMABmAGMAYwBjADcAZAA2AGIAOAAwADUAMwBmADAAMwA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>eclgsecure.net</DnsDomain>
+      <NbDomain>CAIRO</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AEgAMAA2AHIAZQB0AEEAVQBDAG4AdgB5AG4AMQA3AEMATwBJAGYAVwB1AHcAPQA9AHwANgAxAGYANAA2ADQAMABiADcAYgBjADkANwAwADYAMgAwADQAYgAxAGYAMwAwADEAOQBmAGMAZQBjADUANgA3AGMAZgA2ADkAMwA0AGUAMgAyADMAOQAzAGEAZQA3ADgAMwA3ADkAZgA0AGQAMwA1ADgAYQAxADAAOQBkAGIAZgA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>eclgsecuresc.net</DnsDomain>
+      <NbDomain>CAIROSC</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFUAcwBVAHEATQBiAHAAWgBlAGsAbABEAFgAUwA4AE0AQQA4AHEANQBaAEEAPQA9AHwAOAA4AGMAMgBjAGEAZgAzAGIAYwBhADkAMwBhADIAOABmADkANwAzADAANwBiAGQANgAxADQANwBhADUANAAyAGIAMwAwADMANAA2AGQANgA3ADMANQAyADIAYwBkADkAZAA5ADEAMABjADYAZgAxADYAOQA1AGUAMAAzADkANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>example.com</DnsDomain>
+      <NbDomain>EXAMPLE</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AEMARgB0AFIAVABnAC8ATQBKAGkAQgBxAFYAdQBkAHUAagA1AEIANQA4AGcAPQA9AHwANAA5ADQAMgA3ADUANABlADEAYwBmAGMAYgBiADMANgAxAGYANQAwAGUANwA4ADgAZABhADMAYgA2AGUAOQBhAGIAZQA1ADQANAAzADEAMgAwADcANAA5AGMAMgBkADAAMwA5AGEANwBiAGIANAA1ADYANgBiADYAOQBlADYAZgA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>ecollege.int</DnsDomain>
+      <NbDomain>CRETE</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AG8AUQBRAHoAawA5AEEATwA5ADQAaQAxAFIAdgBHAEUASQBJADkANgBTAGcAPQA9AHwAMgA3ADMANgA1ADkAOQAxADUANABmADMAMwA1ADgAYwBjADUAYQBhADIAOAAzADYAMgA3AGEANABmADQAYgA5AGUAMgA4ADYAYQBmADcAYQAxADUAYwBhAGQAMgBmADMAMwA5AGYAZAA1ADQAMgBmADEAOAAwAGYAZQBlADAAZAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>pad.examplecmg.com</DnsDomain>
+      <NbDomain>PAD</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8ACsAeQBBAC8AagBvAFAAaQBwAGQAZwBMADMAWAArAE8AYwBzADMAUwBjAFEAPQA9AHwAOQBmADQAYwA1AGUAYQAzADYAZAA2ADIAYgA3AGEAOQA2ADMAZQA0ADUAMQA0ADYAZQA2ADUANQBmADkAZQBjADQAZAA1ADIAOQA0ADUANABlADEAYQA4ADIAYgBjADgANAA4ADUANABmAGUAYQA5ADcAZQAyADAANABlADYAMwA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>wrk.pad.examplecmg.com</DnsDomain>
+      <NbDomain>WRK</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8ADkAUgA3AEoANABJAGgAZgBmAEYAdABHAEUANQBLAEUAVgBYAEMAYQBuAGcAPQA9AHwAYwAyADAAMwA5ADMANQBhADAAOQAzADYAOQBlAGEAMwBlADUAZgAyADQANAA1ADAAZgBiADkAZQBhADAAYwAzAGEAZAA0ADgAYQAyADAAOAA2ADQAMwBjADcAZAAzAGMAMQA5AGUAMABlADMAOQBiADcAZgA3AGIAYQBiADEANwA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>dcsprod.dcsroot.local</DnsDomain>
+      <NbDomain>DCSPROD</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AEcAeQBIAGEAUgBOAGgAWgBlAEIASQBhADcAaQBZADkAZwBkAC8ARQBxAHcAPQA9AHwAYgBjADAAZQBiAGYAMAAyADQAOQBkAGQAYgBiADIANwBlADIANAA1ADEAYgA1AGMAOQAxAGQAOABhAGYAMQBjADkAYgAwAGIAOQAwADMAYgA3ADMANgA3ADEAZQBkAGIAMwA0ADUANwA0ADIAYgBiADUAZQBiADUAMABkADIAOQA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>dcsutil.dcsroot.local</DnsDomain>
+      <NbDomain>DCSUTIL</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>TRUE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>peroot.com</DnsDomain>
+      <NbDomain>PEROOT</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8ADMAYQBnACsAcQArAGYAcABmAHQAdgBOAEcAWgBNAHQANgBiAFAAUwBvAHcAPQA9AHwANwA1ADMAOQAyADkAOAAxADkAYgAxADEAYgA1ADcAMQA0AGUAZQAzADgANABjAGQAYgAwAGQAMABlADIAYwAyAGQAZAA1AGIANABiADgAZQBiADAAYwA3ADMAOAA2ADEAMgBjADcAMwA3ADMAOQA1AGIAYgA0ADUAZgBjAGIAMwA=</EncPassword>
+      <IsCentralManagementCred>TRUE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>aidmz.dcsdmz.local</DnsDomain>
+      <NbDomain>AIDMZ</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>airoot.dcsroot.local</DnsDomain>
+      <NbDomain>AIROOT</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>dcsdmz.local</DnsDomain>
+      <NbDomain>DCSDMZ</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>dcsprod.dcsroot.local</DnsDomain>
+      <NbDomain>DCSPROD</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>curroot.dcsroot.local</DnsDomain>
+      <NbDomain>CURROOT</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>pbzroot.dcsroot.local</DnsDomain>
+      <NbDomain>PBZROOT</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>pvue.dcsroot.local</DnsDomain>
+      <NbDomain>PVUE</NbDomain>
+      <UserName>DCSUTIL\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>wsecn.dcsroot.local</DnsDomain>
+      <NbDomain>WSECN</NbDomain>
+      <UserName>dcsutil\runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AFgAdgArAEwAOABoAC8AeABmADAAYgBHAGIAZAB4AEQAUQA4AGkANAA5AGcAPQA9AHwANgBkADkAOABhAGYAYwBlAGIANwBmAGYAMAA2ADQANwA0ADkAOAA5ADcAZQAzAGIAZQA2AGUAMQBjAGMAYQAyADQANQA1ADEAZgBkADkAYgAwADMAMQA0ADMAMQA4AGQAOQAwAGMANwBkADYAZQBiAGMAOQAxAGMAYQBmAGMANAA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>schoolnet.prd</DnsDomain>
+      <NbDomain>SCHOOLNET</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8AE0AcQBaAHgAWgA3AEEAegBYAFUAbgBmAGgATABuAFkAcABoAHMAMQBxAHcAPQA9AHwAOQA3AGIAOQA1AGEAMQA3ADgAMABlAGQANABhADAAZQBiAGEAYwA4ADEAZgBlADMAYwAyADgANAA0ADMANwAxADcAZAA0ADMAZAA3ADYANgAyADAAOQA4ADkAYgBkADQAMQA1AGQAMgBlAGQAMwA1ADIANgA1ADMAMgAwAGEAZQA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+    <DomainUser>
+      <DnsDomain>schoolnet.dct</DnsDomain>
+      <NbDomain>SCHOOLNET</NbDomain>
+      <UserName>runScriptSVC</UserName>
+      <EncPassword>76492d1116743f0423413b16050a5345MgB8ADMAKwA2ADEAdABtAFQAQgBCAHIAbwBRADEAeQB0AHEAcABiADEANwB3AGcAPQA9AHwAMAA5AGMAMQBmADQAMAA5AGYAYwA1ADQANQBmADYAOABmADQAMQBlADYANQBlADcAZQAwADQANwBmADYAZAAyAGIAZAA3ADcANwBlADIAZQAxADUAYwBlADUAYgBlAGMAMQBmAGEAZgAyAGYAOQAyAGMAYQA2AGIAZABkAGUAYQA=</EncPassword>
+      <IsCentralManagementCred>FALSE</IsCentralManagementCred>
+    </DomainUser>
+  </DomainUserInfo>
+
+  <DataCenters>
+    <!--
+    <DataCenter>
+      City where the scanning will be performed.
+      <DataCenterCity>Denver</DataCenterCity>
+
+      Company that owns and/or operates the data center.
+      <DataCenterCompany>Example</DataCenterCompany>
+
+      Format: '[Example Location Code] - [Commonly known name] - [Data Center Designation]'
+      <LocationCodes>DN3 - Cornell - DEN03</LocationCodes>
+
+      The location code that Example has given the Data Center.
+        BMCLocationCode is used to select the correct repeater in BMC. It is the actual Example Site Code in most cases, in some cases it is not.
+      <BMCLocationCode>DN3</BMCLocationCode>
+
+      IP range of each of the Subnets used. End the entry with a '.*'
+      <Subnets>
+        <Subnet>10.200.*</Subnet>
+        <Subnet>10.52.*</Subnet>
+        <Subnet>159.182.160.*</Subnet>
+      </Subnets>
+    </DataCenter>
+    -->
+
+    <!-- AU1 -->
+    <DataCenter>
+      <DataCenterCity>Melbourne</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>AU1 - Example</LocationCodes>
+      <BMCLocationCode>AU1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.168.*</Subnet>
+        <Subnet>10.32.169.*</Subnet>
+        <Subnet>10.32.170.*</Subnet>
+        <Subnet>10.32.171.*</Subnet>
+        <Subnet>10.32.172.*</Subnet>
+        <Subnet>10.32.173.*</Subnet>
+        <Subnet>10.32.174.*</Subnet>
+        <Subnet>10.32.175.*</Subnet>
+        <Subnet>10.61.20.*</Subnet>
+        <Subnet>10.61.21.*</Subnet>
+        <Subnet>10.61.30.*</Subnet>
+        <Subnet>10.111.160.*</Subnet>
+        <Subnet>10.161.4.*</Subnet>
+        <Subnet>10.161.5.*</Subnet>
+        <Subnet>10.161.6.*</Subnet>
+        <Subnet>159.182.60.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- BJ1 -->
+    <DataCenter>
+      <DataCenterCity>Bejing</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>BJ1 - Example</LocationCodes>
+      <BMCLocationCode>BJ1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.33.36.*</Subnet>
+        <Subnet>10.111.166.*</Subnet>
+        <Subnet>10.161.68.*</Subnet>
+        <Subnet>10.161.69.*</Subnet>
+        <Subnet>10.161.77.*</Subnet>
+        <Subnet>10.161.78.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- BO3 -->
+    <DataCenter>
+      <DataCenterCity>Boston</DataCenterCity>
+      <DataCenterCompany>Saavis</DataCenterCompany>
+      <LocationCodes>BO3 - Boston - BOS03</LocationCodes>
+      <BMCLocationCode>BO3</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.20.*</Subnet>
+        <Subnet>10.21.*</Subnet>
+        <Subnet>10.23.*</Subnet>
+        <Subnet>10.160.232.*</Subnet>
+        <Subnet>10.160.233.*</Subnet>
+        <Subnet>10.196.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- BZ1 -->
+    <DataCenter>
+      <DataCenterCity>Brazil</DataCenterCity>
+      <DataCenterCompany>Saavis</DataCenterCompany>
+      <LocationCodes>BZ1 - Example</LocationCodes>
+      <BMCLocationCode>BZ1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.136.*</Subnet>
+        <Subnet>10.160.80.*</Subnet>
+        <Subnet>10.160.81.*</Subnet>
+        <Subnet>10.160.82.*</Subnet>
+        <Subnet>10.160.83.*</Subnet>
+        <Subnet>10.160.84.*</Subnet>
+        <Subnet>10.160.85.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- DN1 -->
+    <DataCenter>
+      <DataCenterCity>Denver</DataCenterCity>
+      <DataCenterCompany>ViaWest</DataCenterCompany>
+      <LocationCodes>DN1 - ComPark</LocationCodes>
+      <BMCLocationCode>DN1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.34.0.*</Subnet>
+        <Subnet>10.34.1.*</Subnet>
+        <Subnet>10.34.2.*</Subnet>
+        <Subnet>10.34.3.*</Subnet>
+        <Subnet>10.34.4.*</Subnet>
+        <Subnet>10.34.5.*</Subnet>
+        <Subnet>10.34.6.*</Subnet>
+        <Subnet>10.34.7.*</Subnet>
+        <Subnet>10.34.8.*</Subnet>
+        <Subnet>10.34.9.*</Subnet>
+        <Subnet>10.34.10.*</Subnet>
+        <Subnet>10.34.11.*</Subnet>
+        <Subnet>10.34.12.*</Subnet>
+        <Subnet>10.34.13.*</Subnet>
+        <Subnet>10.34.14.*</Subnet>
+        <Subnet>10.34.15.*</Subnet>
+        <Subnet>10.34.16.*</Subnet>
+        <Subnet>10.34.17.*</Subnet>
+        <Subnet>10.34.18.*</Subnet>
+        <Subnet>10.34.19.*</Subnet>
+        <Subnet>10.34.20.*</Subnet>
+        <Subnet>10.34.21.*</Subnet>
+        <Subnet>10.34.22.*</Subnet>
+        <Subnet>10.34.23.*</Subnet>
+        <Subnet>10.34.24.*</Subnet>
+        <Subnet>10.34.25.*</Subnet>
+        <Subnet>10.34.26.*</Subnet>
+        <Subnet>10.34.27.*</Subnet>
+        <Subnet>10.34.28.*</Subnet>
+        <Subnet>10.34.29.*</Subnet>
+        <Subnet>10.34.30.*</Subnet>
+        <Subnet>10.34.31.*</Subnet>
+        <Subnet>10.34.32.*</Subnet>
+        <Subnet>10.34.33.*</Subnet>
+        <Subnet>10.34.34.*</Subnet>
+        <Subnet>10.34.35.*</Subnet>
+        <Subnet>10.34.36.*</Subnet>
+        <Subnet>10.44.64.*</Subnet>
+        <Subnet>10.123.5.*</Subnet>
+        <Subnet>10.163.129.*</Subnet>
+        <Subnet>10.163.130.*</Subnet>
+        <Subnet>10.163.131.*</Subnet>
+        <Subnet>10.163.133.*</Subnet>
+        <Subnet>10.163.134.*</Subnet>
+        <Subnet>10.163.135.*</Subnet>
+        <Subnet>10.163.136.*</Subnet>
+        <Subnet>10.163.137.*</Subnet>
+        <Subnet>10.163.138.*</Subnet>
+        <Subnet>10.163.139.*</Subnet>
+        <Subnet>10.163.140.*</Subnet>
+        <Subnet>10.163.141.*</Subnet>
+        <Subnet>10.163.142.*</Subnet>
+        <Subnet>10.163.143.*</Subnet>
+        <Subnet>10.163.144.*</Subnet>
+        <Subnet>10.163.145.*</Subnet>
+        <Subnet>10.163.146.*</Subnet>
+        <Subnet>10.163.147.*</Subnet>
+        <Subnet>10.163.148.*</Subnet>
+        <Subnet>10.163.149.*</Subnet>
+        <Subnet>10.163.150.*</Subnet>
+        <Subnet>10.163.151.*</Subnet>
+        <Subnet>10.163.152.*</Subnet>
+        <Subnet>10.163.153.*</Subnet>
+        <Subnet>10.163.154.*</Subnet>
+        <Subnet>10.163.155.*</Subnet>
+        <Subnet>10.163.156.*</Subnet>
+        <Subnet>10.163.157.*</Subnet>
+        <Subnet>10.163.158.*</Subnet>
+        <Subnet>10.163.159.*</Subnet>
+        <Subnet>10.163.160.*</Subnet>
+        <Subnet>10.163.161.*</Subnet>
+        <Subnet>10.163.162.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- DN3 -->
+    <DataCenter>
+      <DataCenterCity>Denver</DataCenterCity>
+      <DataCenterCompany>ViaWest</DataCenterCompany>
+      <LocationCodes>DN3 - Cornell - DEN03</LocationCodes>
+      <BMCLocationCode>DN3</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.200.*</Subnet>
+        <Subnet>10.52.*</Subnet>
+        <Subnet>159.182.160.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- DN5 -->
+    <DataCenter>
+      <DataCenterCity>Denver</DataCenterCity>
+      <DataCenterCompany>ViaWest</DataCenterCompany>
+      <LocationCodes>DN5 - Arapahoe - DEN05</LocationCodes>
+      <!--
+        BMCLocationCode is used to select the correct repeater in BMC.
+        In most cases it is the actual Example Site Code, in some cases it is not.
+        Here the code would be DN5 if we were using the Example Site Code, but in BMC the repeater these servers will use is the one from the production environment in DN3.
+      -->
+      <BMCLocationCode>DN3_PROD</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.185.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- ICD -->
+    <DataCenter>
+      <DataCenterCity>Iowa City</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>ICD - Iowa City - Example</LocationCodes>
+      <BMCLocationCode>ICD</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.25.1.*</Subnet>
+        <Subnet>10.25.2.*</Subnet>
+        <Subnet>10.25.3.*</Subnet>
+        <Subnet>10.25.4.*</Subnet>
+        <Subnet>10.25.5.*</Subnet>
+        <Subnet>10.25.6.*</Subnet>
+        <Subnet>10.25.7.*</Subnet>
+        <Subnet>10.25.8.*</Subnet>
+        <Subnet>10.25.9.*</Subnet>
+        <Subnet>10.25.10.*</Subnet>
+        <Subnet>10.25.11.*</Subnet>
+        <Subnet>10.25.12.*</Subnet>
+        <Subnet>10.25.13.*</Subnet>
+        <Subnet>10.25.14.*</Subnet>
+        <Subnet>10.25.15.*</Subnet>
+        <Subnet>10.25.16.*</Subnet>
+        <Subnet>10.25.17.*</Subnet>
+        <Subnet>10.25.18.*</Subnet>
+        <Subnet>10.25.19.*</Subnet>
+        <Subnet>10.25.20.*</Subnet>
+        <Subnet>10.25.21.*</Subnet>
+        <Subnet>10.25.22.*</Subnet>
+        <Subnet>10.25.23.*</Subnet>
+        <Subnet>10.25.24.*</Subnet>
+        <Subnet>10.25.25.*</Subnet>
+        <Subnet>10.25.26.*</Subnet>
+        <Subnet>10.25.27.*</Subnet>
+        <Subnet>10.25.28.*</Subnet>
+        <Subnet>10.25.29.*</Subnet>
+        <Subnet>10.25.30.*</Subnet>
+        <Subnet>10.25.31.*</Subnet>
+        <Subnet>10.25.44.*</Subnet>
+        <Subnet>10.25.160.*</Subnet>
+        <Subnet>10.25.206.*</Subnet>
+        <Subnet>10.25.207.*</Subnet>
+        <Subnet>10.25.216.*</Subnet>
+        <Subnet>10.25.236.*</Subnet>
+        <Subnet>10.32.3.*</Subnet>
+        <Subnet>10.32.4.*</Subnet>
+        <Subnet>10.32.5.*</Subnet>
+        <Subnet>10.32.6.*</Subnet>
+        <Subnet>10.32.7.*</Subnet>
+        <Subnet>10.32.8.*</Subnet>
+        <Subnet>10.32.9.*</Subnet>
+        <Subnet>10.32.10.*</Subnet>
+        <Subnet>10.32.11.*</Subnet>
+        <Subnet>10.32.12.*</Subnet>
+        <Subnet>10.32.13.*</Subnet>
+        <Subnet>10.32.14.*</Subnet>
+        <Subnet>10.32.15.*</Subnet>
+        <Subnet>10.32.16.*</Subnet>
+        <Subnet>10.32.17.*</Subnet>
+        <Subnet>10.32.18.*</Subnet>
+        <Subnet>10.32.24.*</Subnet>
+        <Subnet>10.32.25.*</Subnet>
+        <Subnet>10.32.26.*</Subnet>
+        <Subnet>10.32.30.*</Subnet>
+        <Subnet>10.32.31.*</Subnet>
+        <Subnet>10.32.32.*</Subnet>
+        <Subnet>10.32.33.*</Subnet>
+        <Subnet>10.32.34.*</Subnet>
+        <Subnet>10.32.35.*</Subnet>
+        <Subnet>10.32.36.*</Subnet>
+        <Subnet>10.32.37.*</Subnet>
+        <Subnet>10.32.38.*</Subnet>
+        <Subnet>10.32.39.*</Subnet>
+        <Subnet>10.32.184.*</Subnet>
+        <Subnet>10.32.187.*</Subnet>
+        <Subnet>10.32.231.*</Subnet>
+        <Subnet>10.36.57.*</Subnet>
+        <Subnet>10.36.58.*</Subnet>
+        <Subnet>10.48.177.*</Subnet>
+        <!--<Subnet>10.36.187.*</Subnet>-->
+        <Subnet>10.111.0.*</Subnet>
+        <Subnet>10.123.0.*</Subnet>
+        <Subnet>10.160.136.*</Subnet>
+        <Subnet>10.160.142.*</Subnet>
+        <Subnet>10.166.132.*</Subnet>
+        <Subnet>10.166.134.*</Subnet>
+        <Subnet>10.160.192.*</Subnet>
+        <Subnet>10.160.193.*</Subnet>
+        <Subnet>159.182.30.*</Subnet>
+        <Subnet>159.182.31.*</Subnet>
+        <Subnet>159.182.32.*</Subnet>
+        <Subnet>159.182.115.*</Subnet>
+        <Subnet>159.182.231.*</Subnet>
+        <Subnet>159.182.232.*</Subnet>
+        <Subnet>159.182.233.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- LO1 -->
+    <DataCenter>
+      <DataCenterCity>London</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>LO1 - Example</LocationCodes>
+      <BMCLocationCode>LO1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.192.*</Subnet>
+        <Subnet>10.32.193.*</Subnet>
+        <Subnet>10.32.194.*</Subnet>
+        <Subnet>10.32.195.*</Subnet>
+        <Subnet>10.32.196.*</Subnet>
+        <Subnet>10.32.197.*</Subnet>
+        <Subnet>10.32.198.*</Subnet>
+        <Subnet>10.32.199.*</Subnet>
+        <Subnet>10.32.200.*</Subnet>
+        <Subnet>10.32.201.*</Subnet>
+        <Subnet>10.32.202.*</Subnet>
+        <Subnet>10.32.203.*</Subnet>
+        <Subnet>10.32.204.*</Subnet>
+        <Subnet>10.32.205.*</Subnet>
+        <Subnet>10.32.206.*</Subnet>
+        <Subnet>10.36.40.*</Subnet>
+        <Subnet>10.36.41.*</Subnet>
+        <Subnet>10.36.42.*</Subnet>
+        <Subnet>10.36.43.*</Subnet>
+        <Subnet>10.36.44.*</Subnet>
+        <Subnet>10.39.64.*</Subnet>
+        <Subnet>10.42.6.*</Subnet>
+        <Subnet>10.111.128.*</Subnet>
+        <Subnet>10.123.16.*</Subnet>
+        <Subnet>10.162.34.*</Subnet>
+        <Subnet>10.162.35.*</Subnet>
+        <Subnet>10.162.36.*</Subnet>
+        <Subnet>10.162.37.*</Subnet>
+        <Subnet>10.162.38.*</Subnet>
+        <Subnet>10.162.39.*</Subnet>
+        <Subnet>10.162.40.*</Subnet>
+        <Subnet>10.162.41.*</Subnet>
+        <Subnet>10.162.42.*</Subnet>
+        <Subnet>10.162.43.*</Subnet>
+        <Subnet>10.162.44.*</Subnet>
+        <Subnet>10.162.45.*</Subnet>
+        <Subnet>10.162.46.*</Subnet>
+        <Subnet>10.162.47.*</Subnet>
+        <Subnet>10.162.48.*</Subnet>
+        <Subnet>10.162.49.*</Subnet>
+        <Subnet>10.162.50.*</Subnet>
+        <Subnet>10.162.51.*</Subnet>
+        <Subnet>10.162.52.*</Subnet>
+        <Subnet>10.162.53.*</Subnet>
+        <Subnet>10.162.54.*</Subnet>
+        <Subnet>10.162.55.*</Subnet>
+        <Subnet>10.162.56.*</Subnet>
+        <Subnet>10.166.136.*</Subnet>
+        <Subnet>10.166.142.*</Subnet>
+        <Subnet>159.182.72.*</Subnet>
+        <Subnet>159.182.73.*</Subnet>
+        <Subnet>159.182.74.*</Subnet>
+        <Subnet>159.182.75.*</Subnet>
+        <Subnet>159.182.76.*</Subnet>
+        <Subnet>159.182.77.*</Subnet>
+        <Subnet>159.182.78.*</Subnet>
+        <Subnet>159.182.79.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- LO3 -->
+    <DataCenter>
+      <DataCenterCity>London</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>LO3 - Example</LocationCodes>
+      <BMCLocationCode>LO3</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.208.*</Subnet>
+        <Subnet>10.32.209.*</Subnet>
+        <Subnet>10.32.212.*</Subnet>
+        <Subnet>10.32.213.*</Subnet>
+        <Subnet>10.32.214.*</Subnet>
+        <Subnet>10.32.215.*</Subnet>
+        <Subnet>10.32.216.*</Subnet>
+        <Subnet>10.32.217.*</Subnet>
+        <Subnet>10.32.218.*</Subnet>
+        <Subnet>10.32.219.*</Subnet>
+        <Subnet>10.32.220.*</Subnet>
+        <Subnet>10.36.48.*</Subnet>
+        <Subnet>10.36.49.*</Subnet>
+        <Subnet>10.36.50.*</Subnet>
+        <Subnet>10.36.51.*</Subnet>
+        <Subnet>10.36.52.*</Subnet>
+        <Subnet>10.36.53.*</Subnet>
+        <Subnet>10.36.54.*</Subnet>
+        <Subnet>10.42.7.*</Subnet>
+        <Subnet>10.111.129.*</Subnet>
+        <Subnet>10.123.17.*</Subnet>
+        <Subnet>10.162.66.*</Subnet>
+        <Subnet>10.162.67.*</Subnet>
+        <Subnet>10.162.68.*</Subnet>
+        <Subnet>10.162.69.*</Subnet>
+        <Subnet>10.162.70.*</Subnet>
+        <Subnet>10.162.71.*</Subnet>
+        <Subnet>10.166.144.*</Subnet>
+        <Subnet>10.166.145.*</Subnet>
+        <Subnet>10.166.146.*</Subnet>
+        <Subnet>10.166.147.*</Subnet>
+        <Subnet>10.166.148.*</Subnet>
+        <Subnet>10.166.149.*</Subnet>
+        <Subnet>10.166.150.*</Subnet>
+        <Subnet>159.182.120.*</Subnet>
+        <Subnet>159.182.121.*</Subnet>
+        <Subnet>159.182.122.*</Subnet>
+        <Subnet>159.182.123.*</Subnet>
+        <Subnet>159.182.124.*</Subnet>
+        <Subnet>159.182.125.*</Subnet>
+        <Subnet>159.182.126.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- MB1 -->
+    <DataCenter>
+      <DataCenterCity>Mumbai</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>MB1 - Example</LocationCodes>
+      <BMCLocationCode>MB1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.33.68.*</Subnet>
+        <Subnet>10.33.69.*</Subnet>
+        <Subnet>10.36.18.*</Subnet>
+        <Subnet>10.161.132.*</Subnet>
+        <Subnet>10.161.133.*</Subnet>
+        <Subnet>10.161.134.*</Subnet>
+        <Subnet>10.161.135.*</Subnet>
+        <Subnet>10.161.136.*</Subnet>
+        <Subnet>10.161.137.*</Subnet>
+        <Subnet>10.161.138.*</Subnet>
+        <Subnet>10.161.139.*</Subnet>
+        <Subnet>10.161.140.*</Subnet>
+        <Subnet>10.161.141.*</Subnet>
+        <Subnet>10.166.54.*</Subnet>
+        <Subnet>159.182.104.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- NJ2 -->
+    <DataCenter>
+      <DataCenterCity>New Jersey</DataCenterCity>
+      <DataCenterCompany>Saavis</DataCenterCompany>
+      <LocationCodes>NJ2 - New Jersey</LocationCodes>
+      <BMCLocationCode>NJ2</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.144.*</Subnet>
+        <Subnet>10.32.145.*</Subnet>
+        <Subnet>10.32.146.*</Subnet>
+        <Subnet>10.32.147.*</Subnet>
+        <Subnet>10.32.148.*</Subnet>
+        <Subnet>10.32.149.*</Subnet>
+        <Subnet>10.32.150.*</Subnet>
+        <Subnet>10.32.151.*</Subnet>
+        <Subnet>10.32.152.*</Subnet>
+        <Subnet>10.32.153.*</Subnet>
+        <Subnet>10.32.154.*</Subnet>
+        <Subnet>10.32.155.*</Subnet>
+        <Subnet>10.32.156.*</Subnet>
+        <Subnet>10.32.157.*</Subnet>
+        <Subnet>10.36.14.*</Subnet>
+        <Subnet>10.48.52.*</Subnet>
+        <Subnet>10.111.55.*</Subnet>
+        <Subnet>10.160.2.*</Subnet>
+        <Subnet>10.160.19.*</Subnet>
+        <Subnet>10.160.20.*</Subnet>
+        <Subnet>10.160.21.*</Subnet>
+        <Subnet>10.160.22.*</Subnet>
+        <Subnet>10.160.35.*</Subnet>
+        <Subnet>10.160.47.*</Subnet>
+        <Subnet>10.160.128.*</Subnet>
+        <Subnet>10.160.129.*</Subnet>
+        <Subnet>10.160.130.*</Subnet>
+        <Subnet>10.160.152.*</Subnet>
+        <Subnet>10.160.153.*</Subnet>
+        <Subnet>10.166.8.*</Subnet>
+        <Subnet>10.166.10.*</Subnet>
+        <Subnet>159.182.16.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- OSG -->
+    <DataCenter>
+      <DataCenterCity>Denver</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>OSG - Centennial - CENCO</LocationCodes>
+      <BMCLocationCode>OSG</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.180.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- SG8 -->
+    <DataCenter>
+      <DataCenterCity>Singapore</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>SG8 - Singapore</LocationCodes>
+      <BMCLocationCode>SG8</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.120.*</Subnet>
+        <Subnet>10.32.121.*</Subnet>
+        <Subnet>10.32.122.*</Subnet>
+        <Subnet>10.32.123.*</Subnet>
+        <Subnet>10.32.124.*</Subnet>
+        <Subnet>10.32.125.*</Subnet>
+        <Subnet>10.32.126.*</Subnet>
+        <Subnet>10.96.88.*</Subnet>
+        <Subnet>10.111.164.*</Subnet>
+        <Subnet>10.123.32.*</Subnet>
+        <Subnet>10.123.52.*</Subnet>
+        <Subnet>10.161.20.*</Subnet>
+        <Subnet>10.161.21.*</Subnet>
+        <Subnet>10.161.22.*</Subnet>
+        <Subnet>10.161.23.*</Subnet>
+        <Subnet>10.161.24.*</Subnet>
+        <Subnet>10.161.25.*</Subnet>
+        <Subnet>10.161.26.*</Subnet>
+        <Subnet>10.161.27.*</Subnet>
+        <Subnet>159.182.64.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- SH1 -->
+    <DataCenter>
+      <DataCenterCity>Shanghai</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>SH1 - Example</LocationCodes>
+      <BMCLocationCode>SH1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.33.52.*</Subnet>
+        <Subnet>10.33.53.*</Subnet>
+        <Subnet>10.33.54.*</Subnet>
+        <Subnet>10.33.55.*</Subnet>
+        <Subnet>10.33.56.*</Subnet>
+        <Subnet>10.111.165.*</Subnet>
+        <Subnet>10.161.100.*</Subnet>
+        <Subnet>10.161.101.*</Subnet>
+        <Subnet>10.161.102.*</Subnet>
+        <Subnet>10.161.103.*</Subnet>
+        <Subnet>10.161.104.*</Subnet>
+        <Subnet>10.161.105.*</Subnet>
+        <Subnet>10.161.106.*</Subnet>
+        <Subnet>10.161.107.*</Subnet>
+        <Subnet>10.161.108.*</Subnet>
+        <Subnet>10.161.109.*</Subnet>
+        <Subnet>10.166.34.*</Subnet>
+        <Subnet>10.166.35.*</Subnet>
+        <Subnet>10.166.36.*</Subnet>
+        <Subnet>10.166.37.*</Subnet>
+        <Subnet>10.166.38.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- TR1 -->
+    <DataCenter>
+      <DataCenterCity>Toronto</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>TR1 - Example</LocationCodes>
+      <BMCLocationCode>TR1</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.160.*</Subnet>
+        <Subnet>10.32.161.*</Subnet>
+        <Subnet>10.160.162.*</Subnet>
+        <Subnet>10.160.163.*</Subnet>
+        <Subnet>10.160.164.*</Subnet>
+        <Subnet>10.160.165.*</Subnet>
+        <Subnet>10.160.166.*</Subnet>
+        <Subnet>10.160.167.*</Subnet>
+        <Subnet>10.160.168.*</Subnet>
+        <Subnet>10.160.169.*</Subnet>
+        <Subnet>159.182.56.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- TRC -->
+    <DataCenter>
+      <DataCenterCity>Cedar Falls</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>TRC - Example</LocationCodes>
+      <BMCLocationCode>TRC</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.50.1.*</Subnet>
+        <Subnet>10.50.2.*</Subnet>
+        <Subnet>10.50.3.*</Subnet>
+        <Subnet>10.50.4.*</Subnet>
+        <Subnet>10.50.5.*</Subnet>
+        <Subnet>10.50.32.*</Subnet>
+      </Subnets>
+    </DataCenter>
+
+    <!-- UKEDG - UKSTR - UKJOR -->
+    <DataCenter>
+      <DataCenterCity>UK</DataCenterCity>
+      <DataCenterCompany>Example</DataCenterCompany>
+      <LocationCodes>UKEDG - UKSTR - UKJOR</LocationCodes>
+      <BMCLocationCode>UK</BMCLocationCode>
+      <Subnets>
+        <Subnet>10.32.196.*</Subnet>
+        <Subnet>10.32.212.*</Subnet>
+        <Subnet>10.134.10.*</Subnet>
+        <Subnet>10.150.161.*</Subnet>
+        <Subnet>10.150.162.*</Subnet>
+        <Subnet>10.150.163.*</Subnet>
+        <Subnet>10.150.164.*</Subnet>
+        <Subnet>10.150.165.*</Subnet>
+        <Subnet>10.150.166.*</Subnet>
+        <Subnet>10.150.167.*</Subnet>
+        <Subnet>10.150.168.*</Subnet>
+        <Subnet>10.150.169.*</Subnet>
+        <Subnet>10.150.2.*</Subnet>
+        <Subnet>10.150.7.*</Subnet>
+        <Subnet>10.151.2.*</Subnet>
+        <Subnet>10.151.21.*</Subnet>
+        <Subnet>10.154.129.*</Subnet>
+        <Subnet>10.154.3.*</Subnet>
+        <Subnet>10.166.150.*</Subnet>
+        <Subnet>10.64.100.*</Subnet>
+        <Subnet>10.64.101.*</Subnet>
+        <Subnet>195.69.213.*</Subnet>
+      </Subnets>
+    </DataCenter>
+  </DataCenters>
+
+  <!-- Relevant BMC-BladeLogic Export Sections -->
+  <BladeLogicSettings>
+    <LegacyPatchWindowCodes>
+      <!-- BO3 Codes by environment to be used to populate the BMC field "LEGACY_PATCH_WINDOW". -->
+      <LegacyPatchWindow>
+        <Environment>All</Environment>
+        <PatchCode>US_BO3_UNASSIGNED_999</PatchCode>
+        <Priority>999</Priority>
+        <DataCenterCity>Boston</DataCenterCity>
+        <Description>Boston Default Patch Group to be used when no others can be selected.</Description>
+      </LegacyPatchWindow>
+
+      <LegacyPatchWindow>
+        <Environment>Production</Environment>
+        <PatchCode>US_BO3_000</PatchCode>
+        <Priority>000</Priority>
+        <DataCenterCity>Boston</DataCenterCity>
+        <Description>Boston Production Default Patch Group</Description>
+      </LegacyPatchWindow>
+
+      <!-- DN3 Codes by environment to be used to populate the BMC field "LEGACY_PATCH_WINDOW". -->
+      <LegacyPatchWindow>
+        <Environment>All</Environment>
+        <PatchCode>US_DN3_UNASSIGNED_999</PatchCode>
+        <Priority>999</Priority>
+        <DataCenterCity>Denver</DataCenterCity>
+        <Description>Denver Default Patch Group to be used when no others can be selected.</Description>
+      </LegacyPatchWindow>
+
+      <LegacyPatchWindow>
+        <Environment>Production</Environment>
+        <PatchCode>US_DN3_PROD_000</PatchCode>
+        <Priority>000</Priority>
+        <DataCenterCity>Denver</DataCenterCity>
+        <Description>Denver Production Default Patch Group</Description>
+      </LegacyPatchWindow>
+
+      <LegacyPatchWindow>
+        <Environment>Staging</Environment>
+        <PatchCode>US_DN3_STAGE_000</PatchCode>
+        <Priority>000</Priority>
+        <DataCenterCity>Denver</DataCenterCity>
+        <Description>Denver Staging Default Patch Group</Description>
+      </LegacyPatchWindow>
+
+      <LegacyPatchWindow>
+        <Environment>Corp</Environment>
+        <PatchCode>US_CENCO_000</PatchCode>
+        <Priority>000</Priority>
+        <DataCenterCity>Denver</DataCenterCity>
+        <Description>Centennial Office Default Patch Group</Description>
+      </LegacyPatchWindow>
+    </LegacyPatchWindowCodes>
+
+    <!--
+      Environment	-> EnvCode
+      Production	-> P
+      Staging / Pre-Production / PPE	-> S
+      Customer Test / CAT / CTT / UAT / QA / Cert	-> C
+      Admin Test / RAT	-> A
+      AIQ	-> Q
+      Test / System Test	-> T
+      Integration (also A&I Core Test)	-> I
+      Development	-> D
+      Disaster Recovery (Hot / Warm Servers Only)	-> R
+    -->
+    <Environments>
+      <Environment>
+        <EnvName>All</EnvName>
+        <EnvCode>P</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Corp</EnvName>
+        <EnvCode>P</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Production</EnvName>
+        <EnvCode>P</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Staging</EnvName>
+        <EnvCode>S</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Pre-Production</EnvName>
+        <EnvCode>S</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>PPE</EnvName>
+        <EnvCode>S</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Customer Test</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>CAT</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>CTT</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>UAT</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>QA</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Cert</EnvName>
+        <EnvCode>C</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Admin Test</EnvName>
+        <EnvCode>A</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>RAT</EnvName>
+        <EnvCode>A</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>AIQ</EnvName>
+        <EnvCode>Q</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Test</EnvName>
+        <EnvCode>T</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>System Test</EnvName>
+        <EnvCode>T</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Integration</EnvName>
+        <EnvCode>I</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Development</EnvName>
+        <EnvCode>D</EnvCode>
+      </Environment>
+
+      <Environment>
+        <EnvName>Disaster Recovery</EnvName>
+        <EnvCode>R</EnvCode>
+      </Environment>
+    </Environments>
+
+    <OperatingSystems>
+      <OperatingSystem>
+        <OSName>Mac</OSName>
+        <OSCode>M</OSCode>
+      </OperatingSystem>
+
+      <OperatingSystem>
+        <OSName>Unix / Linux</OSName>
+        <OSCode>U</OSCode>
+      </OperatingSystem>
+
+      <OperatingSystem>
+        <OSName>Windows</OSName>
+        <OSCode>W</OSCode>
+      </OperatingSystem>
+    </OperatingSystems>
+  </BladeLogicSettings>
+</ScriptConfig>

@@ -1,0 +1,18 @@
+The requirements for running the info server licensing script.
+1. User with Local Administrative Access to each server. (Administrative Access is needed to read parts of the registry. There is no way around this that I have found as of yet.)
+2. PowerShell Version 2.0 minimum. It is highly recommended that PowerShell Versions 3.0 and 4.0 be installed at this time.
+3. Quest ActiveRoles Management Shell for Active Directory Snapin.
+4. Microsoft Excel 2010 or Newer.
+5. Microsoft Office OpenXML SDK 2.5 (Not yet functional, so not required at this time.)
+
+It is recommended that you have a domain service account that has been added to the local administrators group to run this script.
+
+At this time the script must be run interactively while a user is logged in to the server. This is required until the OpenXML part of the script is working.
+
+I am in the process of adapting the script from using a Microsoft Excel COM object, to using the Microsoft Office OpenXML SDK 2.5. This will allow the script to be run in a fully automated manner. Once this is complete it would be best to run the script using a service account. I suggest leveraging the power of Group Policy to push a domain security group, with the domain service account as a member, to the local "Administrators" group on each of oyur servers. The script has been tested using a service account and it does allow all of the information to be collected by the service account if it is setup as described above. What it does not allow for is the creation of the Microsoft Excel file at this time. This is currently why a user has to remain logged in while the script runs.
+
+Any questions on anything, please let me know.
+
+Thanks,
+
+bill
