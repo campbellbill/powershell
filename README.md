@@ -1,7 +1,7 @@
 # powershell
 Useful PowerShell scripts
 
-There are, or will be, many folders in this repository. They will be browken up in to useful categories and areas of use.
+There are, or will be, many folders in this repository. They will be broken up in to useful categories and areas of use.
 
 Examples:
   1. Active Directory - Scripts related to Active Directory.
